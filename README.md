@@ -1,122 +1,118 @@
-# 🍃 RESTful API with Spring Boot & MongoDB
+<div align="center">
 
-[![Java](https://img.shields.io/badge/Java-11%2B-orange?style=for-the-badge&logo=openjdk)](https://www.oracle.com/java/)
-[![Spring Boot](https://img.shields.io/badge/Spring_Boot-2.x%2F3.x-6DB33F?style=for-the-badge&logo=spring-boot)](https://spring.io/projects/spring-boot)
+# 🍃 Spring Boot & MongoDB REST API
+
+*Uma API robusta e escalável para redes sociais, explorando o potencial de bancos NoSQL orientados a documentos.*
+
+[![Java](https://img.shields.io/badge/Java-11%2B-ED8B00?style=for-the-badge&logo=openjdk&logoColor=white)](https://www.oracle.com/java/)
+[![Spring Boot](https://img.shields.io/badge/Spring_Boot-3.x-6DB33F?style=for-the-badge&logo=spring-boot&logoColor=white)](https://spring.io/projects/spring-boot)
 [![MongoDB](https://img.shields.io/badge/MongoDB-4.7%2B-47A248?style=for-the-badge&logo=mongodb&logoColor=white)](https://www.mongodb.com/)
 [![License](https://img.shields.io/badge/License-MIT-green.svg?style=for-the-badge)](LICENSE)
 
-API RESTful desenvolvida com **Java** e **Spring Boot**, utilizando **MongoDB** como banco de dados NoSQL. O projeto aborda a criação de um sistema de rede social simples (usuários e postagens com comentários), demonstrando relacionamentos entre documentos (*DBRef* e aninhamento de DTOs), manipulação de dados e consultas personalizadas.
+</div>
 
 ---
 
-## 📌 Funcionalidades Principais
+### 💡 Sobre o Projeto
 
-- 👥 **Gestão de Usuários (CRUD Completo):** Cadastro, listagem, busca por ID, atualização e remoção de usuários.
-- 📝 **Postagens Aninhadas:** Associação de postagens a usuários e visualização das postagens de um usuário específico.
-- 💬 **Comentários Aninhados:** Inclusão de comentários em posts através de padrões DTO (*Data Transfer Object*).
-- 🔍 **Consultas Personalizadas no MongoDB:**
-  - Busca por palavra-chave no título das postagens usando `@Query` do Spring Data.
-  - Busca multicritério (texto, intervalo de datas inicial e final).
-- 🛡️ **Tratamento Global de Exceções:** Respostas HTTP apropriadas e padronizadas para recursos não encontrados (`404 Not Found`).
+Esta aplicação foi desenvolvida com o objetivo de demonstrar a criação de uma **Web API RESTful** utilizando a pilha Java com **Spring Boot** conectada a um banco de dados não-relacional (**MongoDB**). 
+
+O sistema modela uma estrutura de rede social com relacionamentos entre documentos (usuários, postagens e comentários), abordando conceitos fundamentais como **Data Transfer Objects (DTOs)**, **consultas customizadas com regex** e **tratamento global de exceções HTTP**.
 
 ---
 
-## 🛠️ Tecnologias e Padrões Utilizados
+### 🎯 Funcionalidades Principais
 
-- **Linguagem:** Java (JDK 11+)
-- **Framework Principal:** Spring Boot
-- **Acesso a Dados:** Spring Data MongoDB
-- **Banco de Dados:** MongoDB (NoSQL orientado a documentos)
-- **Padrões de Arquitetura & Design:**
-  - **Camadas (Layered Architecture):**
-    - `Resource / Controller`: Exposição dos endpoints REST.
-    - `Service`: Regras de negócio e orquestração.
-    - `Repository`: Interface de persistência estendendo `MongoRepository`.
-  - **DTO Pattern (Data Transfer Object):** Otimização do tráfego de dados na rede e encapsulamento de visões específicas.
-  - **Exception Handling:** Trata exceções da aplicação via `@ControllerAdvice` e `StandardError`.
+- 👤 **CRUD de Usuários:** Gestão completa de cadastros com busca por ID e suporte a atualização parcial/total.
+- 📝 **Postagens & Autorias:** Associação de publicações aos seus respectivos autores utilizando referências (`DBRef`).
+- 💬 **Comentários Aninhados:** Utilização de objetos aninhados (*Embedded Documents*) para garantir alta performance de leitura.
+- 🔍 **Engine de Busca Avançada:**
+  - Filtro simples por palavra-chave no título das postagens (usando `@Query` com *case-insensitive* regex).
+  - Pesquisa multicritério combinando texto livre e intervalo de datas (`minDate` e `maxDate`).
+- 🛡️ **Respostas HTTP Padronizadas:** Exceções tratadas centralizadamente com códigos de status HTTP apropriados (`404 Not Found`, etc.).
 
 ---
 
-## 📁 Estrutura do Projeto
+### 🧱 Arquitetura e Estrutura
 
 ```text
-src/main/java/com/seuusuario/apirest_mongodb/
-├── config/             # Configurações iniciais (Instanciação/Carga de dados no MongoDB)
-├── domain/             # Entidades do domínio (User, Post)
-├── dto/                # Objetos de Transferência de Dados (UserDTO, AuthorDTO, CommentDTO)
-├── repository/         # Interfaces Spring Data MongoRepository
-├── resources/          # Controllers / Endpoints REST (UserResource, PostResource)
-│   └── exception/      # Tratamento global de exceções da API
-└── services/           # Camada de serviços e regras de negócio
+com.seuusuario.apirest_mongodb/
+│
+├── 🎛️ resources/       # Endpoints REST da API (UserResource, PostResource)
+│   └── exception/      # Handler global de exceções (ResourceExceptionHandler)
+│
+├── 🧠 services/        # Camada de regras de negócio (UserService, PostService)
+│
+├── 📦 repository/      # Interfaces de acesso ao MongoDB (MongoRepository)
+│
+├── 📑 dto/             # Data Transfer Objects (UserDTO, AuthorDTO, CommentDTO)
+│
+├── 💎 domain/          # Entidades/Documentos NoSQL (User, Post)
+│
+└── ⚙️ config/          # Carga inicial e seeding do banco de dados
 ```
 
 ---
 
-## 📍 Endpoints da API
+### 📡 Guia de Endpoints
 
-### **Usuários (`/users`)**
+<details>
+<summary>📋 <b>Clique para expandir a tabela completa de rotas da API</b></summary>
+
+<br/>
+
+#### 👤 Recursos de Usuários (`/users`)
 
 | Método | Endpoint | Descrição |
-| :--- | :--- | :--- |
+| :---: | :--- | :--- |
 | `GET` | `/users` | Retorna todos os usuários cadastrados |
-| `GET` | `/users/{id}` | Retorna um usuário pelo ID |
-| `POST` | `/users` | Cria um novo usuário |
+| `GET` | `/users/{id}` | Busca um usuário por seu ID único |
+| `POST` | `/users` | Cadastra um novo usuário |
 | `PUT` | `/users/{id}` | Atualiza os dados de um usuário existente |
-| `DELETE` | `/users/{id}` | Remove um usuário |
-| `GET` | `/users/{id}/posts` | Retorna todas as postagens de um usuário |
+| `DELETE` | `/users/{id}` | Remove um usuário do banco de dados |
+| `GET` | `/users/{id}/posts` | Retorna todas as postagens publicadas por um usuário |
 
-### **Postagens (`/posts`)**
+#### 📝 Recursos de Postagens (`/posts`)
 
 | Método | Endpoint | Descrição |
-| :--- | :--- | :--- |
-| `GET` | `/posts/{id}` | Retorna uma postagem pelo ID |
-| `GET` | `/posts/titlesearch?text=...` | Busca postagens por texto no título |
-| `GET` | `/posts/fullsearch?text=...&minDate=...&maxDate=...` | Busca avançada por texto e intervalo de datas |
+| :---: | :--- | :--- |
+| `GET` | `/posts/{id}` | Retorna os detalhes de um post específico com seus comentários |
+| `GET` | `/posts/titlesearch` | Busca posts que contenham o texto informado no título |
+| `GET` | `/posts/fullsearch` | Pesquisa avançada por texto e intervalo de datas |
+
+</details>
 
 ---
 
-## ⚙️ Pré-requisitos
+### 🚀 Como Executar
 
-Para executar o projeto localmente, você precisará de:
+#### 📌 Pré-requisitos
+- **Java JDK 11** ou superior
+- **Docker** ou serviço local do **MongoDB** (porta `27017`)
 
-- [JDK 11+](https://www.oracle.com/java/technologies/downloads/)
-- [Maven](https://maven.apache.org/) (opcional se usar o wrapper `mvnw`)
-- [MongoDB Community Server](https://www.mongodb.com/try/download/community) rodando na porta padrão (`27017`) ou via **Docker**.
-- Um cliente HTTP para testar a API (ex: [Postman](https://www.postman.com/), [Insomnia](https://insomnia.rest/) ou VS Code Thunder Client).
+#### 1️⃣ Subir o MongoDB via Docker
+```bash
+docker run -d -p 27017:27017 --name mongodb mongo
+```
 
----
+#### 2️⃣ Clonar e iniciar a aplicação
+```bash
+# Clone o repositório
+git clone [https://github.com/andrade111/apiRest_mongodb.git](https://github.com/andrade111/apiRest_mongodb.git)
 
-## 🚀 Como Executar o Projeto
+# Acesse a pasta do projeto
+cd apiRest_mongodb
 
-1. **Clone o repositório:**
-   ```bash
-   git clone [https://github.com/andrade111/apiRest_mongodb.git](https://github.com/andrade111/apiRest_mongodb.git)
-   ```
+# Execute o projeto com o Maven Wrapper
+./mvnw spring-boot:run
+```
 
-2. **Acesse a pasta do projeto:**
-   ```bash
-   cd apiRest_mongodb
-   ```
-
-3. **Certifique-se de que o serviço do MongoDB está em execução:**
-   - **Caso use Docker:**
-     ```bash
-     docker run -d -p 27017:27017 --name mongodb mongo
-     ```
-
-4. **Execute a aplicação:**
-   ```bash
-   ./mvnw spring-boot:run
-   ```
-
-5. A API estará acessível em: `http://localhost:8080`
+🌐 **API disponível em:** `http://localhost:8080`
 
 ---
 
-## 📄 Licença
+<div align="center">
 
-Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para mais detalhes.
+Desenvolvido com ☕ por **[Gabriel Andrade](https://github.com/andrade111)** • Licença MIT
 
----
-
-<p align="center">Desenvolvido por <a href="https://github.com/andrade111">Gabriel Andrade</a> 👋</p>
+</div>
